@@ -4,8 +4,6 @@
 using namespace std;
 
 int rx1, ry1, rx2, ry2;
-//int cx, cy, r;
-int sx1, sy1;
 
 float green[3] = {0,1,0};
 float red[3]   = {1,0,0};
@@ -17,7 +15,6 @@ void drawPixel(int x,int y,float r,float g,float b)
     glBegin(GL_POINTS);
     glVertex2i(x,y);
     glEnd();
-    
 }
 
 void getPixelColor(int x,int y,float color[3])
@@ -50,7 +47,7 @@ void display()
 {
     glClear(GL_COLOR_BUFFER_BIT);
     glPointSize(2.0);
-    // Rectangle
+
     glColor3f(1,1,1);
     glBegin(GL_LINE_LOOP);
         glVertex2i(rx1,ry1);
@@ -59,42 +56,31 @@ void display()
         glVertex2i(rx1,ry2);
     glEnd();
 
-    // Circle
-    // glBegin(GL_LINE_LOOP);
-    // for(int i=0;i<360;i++)
-    // {
-    //     float angle=i*3.1416/180;
-    //     int x=cx+r*cos(angle);
-    //     int y=cy+r*sin(angle);
-    //     glVertex2i(x,y);
-    // }
-    // glEnd();
-
     glFlush();
+}
 
-    boundaryFill8(sx1,sy1,green,white);
-    //boundaryFill8(sx2,sy2,red,white);
+void mouse(int button, int state, int x, int y)
+{
+    if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
+    {
+        y = 500 - y;   // Convert screen coordinate to OpenGL coordinate
+
+        boundaryFill8(x,y,green,white);
+
+        glFlush();
+    }
 }
 
 void init()
 {
     glClearColor(0,0,0,1);
-     gluOrtho2D(0,500,0,500);
+    gluOrtho2D(0,500,0,500);
 }
 
 int main(int argc,char** argv)
 {
     cout<<"Enter rectangle coordinates (x1 y1 x2 y2): ";
     cin>>rx1>>ry1>>rx2>>ry2;
-
-    // cout<<"Enter circle center and radius (cx cy r): ";
-    // cin>>cx>>cy>>r;
-
-    cout<<"Enter seed point for rectangle fill: ";
-    cin>>sx1>>sy1;
-
-    // cout<<"Enter seed point for circle fill: ";
-    // cin>>sx2>>sy2;
 
     glutInit(&argc,argv);
     glutInitDisplayMode(GLUT_SINGLE|GLUT_RGB);
@@ -103,7 +89,9 @@ int main(int argc,char** argv)
     glutCreateWindow("Boundary Fill 8 Connected");
 
     init();
+
     glutDisplayFunc(display);
+    glutMouseFunc(mouse);   // Register mouse function
 
     glutMainLoop();
 }
